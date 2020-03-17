@@ -29,13 +29,13 @@ typedef boost::mutex::scoped_lock AutoLock;
 }  // namespace phonenumbers
 }  // namespace i18n
 
-#else  // I18N_PHONENUMBERS_USE_BOOST
+#else // I18N_PHONENUMBERS_USE_BOOST
 
 #include "phonenumbers/base/logging.h"
 #include "phonenumbers/base/thread_checker.h"
 
 // C++11 Lock implementation based on std::mutex.
-#if  __cplusplus>=201103L
+#if  __cplusplus>=201103L && !defined(I18N_PHONENUMBERS_NO_THREAD_SAFETY)
 #include <mutex>
 
 namespace i18n {
@@ -70,7 +70,7 @@ namespace phonenumbers {
 
 class Lock {
  public:
-  Lock() {}
+  Lock() = default;
 
   void Acquire() const {
     DCHECK(thread_checker_.CalledOnValidThread());
