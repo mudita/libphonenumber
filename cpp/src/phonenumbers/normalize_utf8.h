@@ -20,6 +20,16 @@ namespace i18n {
 namespace phonenumbers {
 
 struct NormalizeUTF8 {
+#ifdef I18N_PHONENUMBERS_ASCII_DECIMALS_ONLY
+  static int32_t u_charDigitValue(int32_t c) {
+    if(c >= '0' && c <= '9') {
+      return c - '0';
+    }
+    else {
+      return -1;
+    }
+  }
+#endif
   // Put a UTF-8 string in ASCII digits: All decimal digits (Nd) replaced by
   // their ASCII counterparts; all other characters are copied from input to
   // output.

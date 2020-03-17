@@ -16,14 +16,17 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
 #include <cstring>
 #include <iterator>
 #include <map>
 #include <utility>
 #include <vector>
 
+#ifndef I18N_PHONENUMBERS_ASCII_DECIMALS_ONLY
 #include <unicode/uchar.h>
 #include <unicode/utf8.h>
+#endif
 
 #include "phonenumbers/asyoutypeformatter.h"
 #include "phonenumbers/base/basictypes.h"
@@ -328,11 +331,11 @@ PhoneNumberUtil::ValidationResult TestNumberLength(
   // parent, this is missing, so we fall back to the general desc (where no
   // numbers of the type exist at all, there is one possible length (-1) which
   // is guaranteed not to match the length of any real phone number).
-  RepeatedField<int> possible_lengths =
+  RepeatedField<int32_t> possible_lengths =
       desc_for_type->possible_length_size() == 0
           ? metadata.general_desc().possible_length()
           : desc_for_type->possible_length();
-  RepeatedField<int> local_lengths =
+  RepeatedField<int32_t> local_lengths =
       desc_for_type->possible_length_local_only();
   if (type == PhoneNumberUtil::FIXED_LINE_OR_MOBILE) {
     const PhoneNumberDesc* fixed_line_desc =
@@ -2490,7 +2493,7 @@ void PhoneNumberUtil::GetNationalSignificantNumber(
   // national prefix. Ensure the number of leading zeros is at least 0 so we
   // don't crash in the case of malicious input.
   StrAppend(national_number, number.italian_leading_zero() ?
-      string(std::max(number.number_of_leading_zeros(), 0), '0') : "");
+      string(std::max<int32_t>(number.number_of_leading_zeros(), 0), '0') : "");
   StrAppend(national_number, number.national_number());
 }
 
@@ -2834,7 +2837,7 @@ bool PhoneNumberUtil::MaybeStripExtension(string* number, string* extension)
 // leaves national_number unmodified. Assumes the national_number is at least 3
 // characters long.
 int PhoneNumberUtil::ExtractCountryCode(string* national_number) const {
-  int potential_country_code;
+  int32_t potential_country_code;
   if (national_number->empty() || (national_number->at(0) == '0')) {
     // Country codes do not begin with a '0'.
     return 0;

@@ -19,6 +19,8 @@
 #include <iterator>
 #include <map>
 
+#include <cstdint>
+
 #include "phonenumbers/default_logger.h"
 #include "phonenumbers/matcher_api.h"
 #include "phonenumbers/phonemetadata.pb.h"
@@ -85,7 +87,7 @@ bool MatchesPossibleNumberAndNationalNumber(
     const MatcherApi& matcher_api,
     const string& number,
     const PhoneNumberDesc& desc) {
-  const RepeatedField<int>& lengths = desc.possible_length();
+  const RepeatedField<int32_t>& lengths = desc.possible_length();
   if (desc.possible_length_size() > 0 &&
       std::find(lengths.begin(), lengths.end(), number.length()) ==
           lengths.end()) {
@@ -119,7 +121,7 @@ bool ShortNumberInfo::IsPossibleShortNumberForRegion(const PhoneNumber& number,
   }
   string short_number;
   phone_util_.GetNationalSignificantNumber(number, &short_number);
-  const RepeatedField<int>& lengths =
+  const RepeatedField<int32_t>& lengths =
       phone_metadata->general_desc().possible_length();
   return (std::find(lengths.begin(), lengths.end(), short_number.length()) !=
       lengths.end());
@@ -137,7 +139,7 @@ bool ShortNumberInfo::IsPossibleShortNumber(const PhoneNumber& number) const {
     if (!phone_metadata) {
       continue;
     }
-    const RepeatedField<int>& lengths =
+    const RepeatedField<int32_t>& lengths =
         phone_metadata->general_desc().possible_length();
     if (std::find(lengths.begin(), lengths.end(), short_number.length()) !=
         lengths.end()) {
@@ -198,7 +200,7 @@ ShortNumberInfo::ShortNumberCost ShortNumberInfo::GetExpectedCostForRegion(
   // match the general description; for this reason, we check the possible
   // lengths against the general description first to allow an early exit if
   // possible.
-  const RepeatedField<int>& lengths =
+  const RepeatedField<int32_t>& lengths =
       phone_metadata->general_desc().possible_length();
   if (std::find(lengths.begin(), lengths.end(), short_number.length()) ==
       lengths.end()) {
