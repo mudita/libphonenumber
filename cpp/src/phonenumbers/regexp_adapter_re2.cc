@@ -27,6 +27,8 @@
 #include "phonenumbers/base/logging.h"
 #include "phonenumbers/stringutil.h"
 
+using re2::StringPiece;
+
 namespace i18n {
 namespace phonenumbers {
 
