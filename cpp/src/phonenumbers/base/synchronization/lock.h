@@ -34,8 +34,34 @@ typedef boost::mutex::scoped_lock AutoLock;
 #include "phonenumbers/base/logging.h"
 #include "phonenumbers/base/thread_checker.h"
 
+#if defined(I18N_PHONENUMBERS_USE_RTOS_WRAPPER)
+
+#include <mutex.hpp>
+
+namespace i18n {
+namespace phonenumbers {
+
+class Lock {
+public:
+  Lock() = default;
+
+  void Acquire() const {
+    mutex_.Lock();
+  }
+
+  void Release() const {
+    mutex_.Unlock();
+  }
+
+private:
+  mutable cpp_freertos::MutexStandard mutex_;
+};
+
+}  // namespace phonenumbers
+}  // namespace i18n
+
 // C++11 Lock implementation based on std::mutex.
-#if  __cplusplus>=201103L && !defined(I18N_PHONENUMBERS_NO_THREAD_SAFETY)
+#elif  __cplusplus>=201103L && !defined(I18N_PHONENUMBERS_NO_THREAD_SAFETY)
 #include <mutex>
 
 namespace i18n {
@@ -92,6 +118,7 @@ class Lock {
 #else
 #include "phonenumbers/base/synchronization/lock_posix.h"
 #endif
+#endif  // I18N_PHONENUMBERS_USE_BOOST
 
 namespace i18n {
 namespace phonenumbers {
@@ -113,5 +140,4 @@ class AutoLock {
 }  // namespace phonenumbers
 }  // namespace i18n
 
-#endif  // I18N_PHONENUMBERS_USE_BOOST
 #endif  // I18N_PHONENUMBERS_BASE_SYNCHRONIZATION_LOCK_H_

@@ -17,6 +17,26 @@
 #ifndef I18N_PHONENUMBERS_BASE_THREAD_CHECKER_H_
 #define I18N_PHONENUMBERS_BASE_THREAD_CHECKER_H_
 
+#if defined(I18N_PHONENUMBERS_USE_RTOS_WRAPPER)
+
+#include <thread.hpp>
+
+namespace i18n {
+namespace phonenumbers {
+
+class ThreadChecker {
+ public:
+  ThreadChecker() : thread_id_(cpp_freertos::Thread::GetCurrentThreadHandle()) {}
+
+  bool CalledOnValidThread() const {
+    return thread_id_ == cpp_freertos::Thread::GetCurrentThreadHandle();
+  }
+
+ private:
+  const TaskHandle_t thread_id_;
+};
+
+#else
 #if !defined(I18N_PHONENUMBERS_USE_BOOST)
 
 // Note that I18N_PHONENUMBERS_NO_THREAD_SAFETY must be defined only to let the
@@ -62,6 +82,7 @@ class ThreadChecker {
   }
 };
 
+#endif
 #endif
 
 }  // namespace phonenumbers

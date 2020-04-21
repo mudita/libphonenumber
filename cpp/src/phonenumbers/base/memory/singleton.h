@@ -56,7 +56,7 @@ template <class T> boost::once_flag Singleton<T>::flag = BOOST_ONCE_INIT;
 #include "phonenumbers/base/logging.h"
 #include "phonenumbers/base/thread_checker.h"
 
-#if !defined(__linux__) && !defined(__APPLE__)
+#if defined(I18N_PHONENUMBERS_USE_RTOS_WRAPPER) || (!defined(__linux__) && !defined(__APPLE__))
 
 namespace i18n {
 namespace phonenumbers {
@@ -76,7 +76,9 @@ class Singleton {
     if (!instance) {
       instance = new T();
     }
+#ifdef I18N_PHONENUMBERS_NO_THREAD_SAFETY
     DCHECK(instance->thread_checker_.CalledOnValidThread());
+#endif
     return instance;
   }
 
