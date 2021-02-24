@@ -86,6 +86,7 @@ option ("USE_LITE_METADATA" "Use lite metadata" "OFF")
 option ("USE_RE2" "Use RE2" "OFF")
 option ("USE_STD_MAP" "Force the use of std::map" "OFF")
 option ("BUILD_STATIC_LIB" "Build static libraries" "ON")
+option ("MINIMAL_METADATA" "Use minimal metadata" "OFF")
 
 if (${USE_ALTERNATE_FORMATS} STREQUAL "ON")
   add_definitions ("-DI18N_PHONENUMBERS_USE_ALTERNATE_FORMATS")
@@ -151,6 +152,14 @@ endif ()
 
 # Add protoc (Protocol Buffers compiler) target.
 set (RESOURCES_DIR "${CMAKE_SOURCE_DIR}/../resources")
+
+if (MINIMAL_METADATA)
+  set (METADATA_XML "${RESOURCES_DIR}/PhoneNumberMetadata-minimal.xml")
+  set (METADATA_SHORT_XML "${RESOURCES_DIR}/ShortNumberMetadata-minimal.xml")
+else ()
+  set (METADATA_XML "${RESOURCES_DIR}/PhoneNumberMetadata.xml")
+  set (METADATA_SHORT_XML "${RESOURCES_DIR}/ShortNumberMetadata.xml")
+endif ()
 
 set (
   PROTOBUF_SOURCES "${RESOURCES_DIR}/phonemetadata.proto"
@@ -291,7 +300,7 @@ if (${USE_LITE_METADATA} STREQUAL "ON")
   set (METADATA_TARGET "generate-lite-metadata")
   add_metadata_gen_target (
     ${METADATA_TARGET}
-    "${RESOURCES_DIR}/PhoneNumberMetadata.xml"
+    ${METADATA_XML}
     "lite_metadata"
     "metadata"
   )
@@ -301,7 +310,7 @@ else ()
   set (METADATA_TARGET "generate-metadata")
   add_metadata_gen_target (
     ${METADATA_TARGET}
-    "${RESOURCES_DIR}/PhoneNumberMetadata.xml"
+    ${METADATA_XML}
     "metadata"
     "metadata"
   )
@@ -322,7 +331,7 @@ list (APPEND TESTING_LIBRARY_SOURCES "src/phonenumbers/test_metadata.cc")
 set (SHORT_METADATA_TARGET "generate-short-number-metadata")
 add_metadata_gen_target (
   ${SHORT_METADATA_TARGET}
-  "${RESOURCES_DIR}/ShortNumberMetadata.xml"
+  ${METADATA_SHORT_XML}
   "short_metadata"
   "short_metadata"
 )
